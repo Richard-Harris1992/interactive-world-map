@@ -225,16 +225,27 @@ allCountries.forEach((country) => {
 
 
 
-const nameClickEvent = async (e) => {
+const nameClickEvent =  (e) => {
     h1.textContent = '';
     h1.textContent = e.target.classList.value;
     const countryCode = countryMap.get(e.target.classList.value);
-    console.log(countryCode);
-    const response = await fetch(`http://api.geonames.org/countryInfoJSON?formatted=true&lang=it&country=${countryCode}&username=rhar763&style=full`)
-    const data = await response.json();
-    console.log(data.geonames);
-}
+   
+    const geoNameData = 
+        fetch(`http://api.geonames.org/countryInfoJSON?formatted=true&lang=it&country=${countryCode}&username=rhar763&style=full`)
+        .then(response => response.json());
+    const wordBankData =  
+        fetch(`http://api.worldbank.org/v2/country/${countryCode}?format=json`)
+        .then(response => response.json());
+    Promise.all([geoNameData, wordBankData])
+        .then((data) => {
+            console.log(data[0].geonames[0].population, data[1][1][0].incomeLevel);
+            //create a modal on right hand of screen that displays the data;
 
+
+
+        });
+}
+ 
 allCountries.forEach((country) => {
     country.addEventListener('click', nameClickEvent);
 });
